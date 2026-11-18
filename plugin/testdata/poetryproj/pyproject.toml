@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "Poetry Proj"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31"
+django = {version = "~4.2", extras = ["argon2"]}
+local-lib = {path = "../lib", develop = true}
+optional-one = {version = "*", optional = true}
+colorama = {version = "^0.4", markers = "sys_platform == 'win32'"}
+
+[tool.poetry.scripts]
+serve = "poetry_proj.app:run"

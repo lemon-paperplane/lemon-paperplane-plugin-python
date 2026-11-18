@@ -1,0 +1,9 @@
+[packages]
+flask = "*"
+gunicorn = {version = ">=21", markers = "sys_platform != 'win32'"}
+
+[dev-packages]
+pytest = "*"
+
+[requires]
+python_version = "3.11"

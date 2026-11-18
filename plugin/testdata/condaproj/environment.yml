@@ -1,0 +1,10 @@
+name: ml-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy
+  - pip
+  - pip:
+      - requests==2.32.3   # http
+      - rich

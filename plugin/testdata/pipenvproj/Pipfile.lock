@@ -1,0 +1,10 @@
+{
+  "_meta": {"requires": {"python_version": "3.11"}},
+  "default": {
+    "flask": {"version": "==3.0.3", "hashes": ["sha256:x"]},
+    "gunicorn": {"version": "==22.0.0", "markers": "sys_platform != 'win32'"}
+  },
+  "develop": {
+    "pytest": {"version": "==8.2.0"}
+  }
+}

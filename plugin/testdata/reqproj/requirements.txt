@@ -1,0 +1,10 @@
+# 主依赖
+--index-url https://pypi.org/simple
+-r requirements/base.txt
+requests==2.32.3 \
+    --hash=sha256:abc
+-e ./libs/shared
+git+https://github.com/org/repo.git#egg=Some_Pkg
+pyobjc-core==10.0; platform_system == "Darwin"
+pywin32==306; platform_system == "Windows"
+numpy>=1.26; python_version >= "3.9"

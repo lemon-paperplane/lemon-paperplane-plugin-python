@@ -1,0 +1,220 @@
+{
+  "id": "python",
+  "name": "%plugin.name%",
+  "version": "0.1.0",
+  "vendor": "Lemon Paperplane",
+  "description": "%plugin.description%",
+  "icon": "icons/python.svg",
+  "category": "language",
+  "engines": {"paperplane": ">=0.1.0 <0.2.0"},
+  "protocol": 1,
+  "executable": "bin/paperplane-plugin-python",
+  "activation": {
+    "files": ["pyproject.toml", "requirements*.txt", "requirements/", "setup.py", "setup.cfg", "Pipfile", "environment.yml", "environment.yaml", "manage.py", "*.py"]
+  },
+  "contributes": {
+    "languages": [
+      {"id": "python", "name": "Python", "extensions": [".py", ".pyw", ".pyi"], "filenames": ["SConstruct", "SConscript"], "module": "editor/lang-python.js", "lineComment": "#"}
+    ],
+    "facets": [
+      {"id": "python", "name": "Python", "icon": "icons/python.svg", "category": "language", "priority": 50},
+      {"id": "uv", "name": "uv", "icon": "icons/uv.svg", "category": "packageManager", "priority": 10},
+      {"id": "poetry", "name": "Poetry", "icon": "icons/poetry.svg", "category": "packageManager", "priority": 10},
+      {"id": "pdm", "name": "PDM", "icon": "icons/pdm.svg", "category": "packageManager", "priority": 10},
+      {"id": "pipenv", "name": "Pipenv", "icon": "builtin:package", "category": "packageManager", "priority": 10},
+      {"id": "conda", "name": "conda", "icon": "icons/anaconda.svg", "category": "packageManager", "priority": 10}
+    ],
+    "toolchains": [
+      {"kind": "python", "name": "Python", "icon": "icons/python.svg", "installable": true}
+    ],
+    "runConfigurationTypes": [
+      {
+        "id": "python-script",
+        "name": "%run.script%",
+        "icon": "icons/python.svg",
+        "facets": ["python"],
+        "options": [
+          {"key": "script", "title": "%opt.script%", "type": "path", "placeholder": "main.py", "info": "%opt.script.info%"},
+          {"key": "module", "title": "%opt.module%", "type": "string", "placeholder": "package.module", "info": "%opt.module.info%"},
+          {"key": "args", "title": "%opt.args%", "type": "string"},
+          {"key": "workingDir", "title": "%opt.workingDir%", "type": "path", "info": "%opt.workingDir.info%"},
+          {"key": "envFile", "title": "%opt.envFile%", "type": "path", "default": ".env", "info": "%opt.envFile.info%"},
+          {"key": "env", "title": "%opt.env%", "type": "keyvalue"},
+          {"key": "interpreterOptions", "title": "%opt.interpreterOptions%", "type": "string", "placeholder": "-X dev", "advanced": true}
+        ]
+      }
+    ],
+    "dependencyManagers": ["uv", "pip", "poetry", "pdm", "pipenv", "conda"],
+    "ideRunConfigTypes": ["PythonConfigurationType", "debugpy", "python"],
+    "services": ["resolveEnv", "installPackages"],
+    "urlPatterns": [
+      {"hint": "Serving HTTP on", "pattern": "Serving HTTP on \\S+ port (\\d+)", "url": "http://127.0.0.1:{1}/", "ready": true, "facets": ["python"]},
+      {"hint": "Local URL:", "pattern": "Local URL:\\s+(https?://\\S+)", "ready": true, "facets": ["python"]},
+      {"hint": "Running on local URL:", "pattern": "Running on local URL:\\s+(https?://\\S+)", "ready": true, "facets": ["python"]}
+    ],
+    "diagnostics": [
+      {
+        "id": "python.module-not-found",
+        "hint": "No module named",
+        "pattern": "ModuleNotFoundError: No module named '([A-Za-z0-9_]+)",
+        "severity": "error",
+        "title": "%diag.moduleNotFound.title%",
+        "message": "%diag.moduleNotFound.message%",
+        "stages": ["run"],
+        "fixes": [
+          {"id": "installDeps", "title": "%fix.installDeps%", "kind": "installDependencies", "recommended": true},
+          {"id": "installPackage", "title": "%fix.installPackage%", "kind": "custom", "params": {"module": "{1}"}}
+        ]
+      },
+      {
+        "id": "python.distutils-removed",
+        "hint": "No module named 'distutils'",
+        "pattern": "No module named 'distutils'",
+        "severity": "error",
+        "title": "%diag.distutils.title%",
+        "message": "%diag.distutils.message%",
+        "fixes": [
+          {"id": "python311", "title": "%fix.usePython311%", "kind": "setToolchain", "params": {"kind": "python", "constraint": "3.11"}, "recommended": true},
+          {"id": "setuptools", "title": "%fix.installSetuptools%", "kind": "custom", "params": {"module": "distutils"}}
+        ]
+      },
+      {
+        "id": "python.requires-different-python",
+        "hint": "requires a different Python",
+        "pattern": "requires a different Python: ([\\d.]+) not in '([^']+)'",
+        "severity": "error",
+        "title": "%diag.differentPython.title%",
+        "message": "%diag.differentPython.message%",
+        "fixes": [
+          {"id": "python", "title": "%fix.switchPython%", "kind": "setToolchain", "params": {"kind": "python", "constraint": "{2}"}, "recommended": true}
+        ]
+      },
+      {
+        "id": "python.uv-python-unsatisfied",
+        "hint": "does not satisfy Python",
+        "pattern": "(?:current|requested) Python version \\(([\\d.]+)\\) does not satisfy Python\\s*([<>=!~][^ ,]*(?:,\\s*[<>=!~][^ ,]*)*)",
+        "severity": "error",
+        "title": "%diag.differentPython.title%",
+        "message": "%diag.differentPython.message%",
+        "fixes": [
+          {"id": "python", "title": "%fix.switchPython%", "kind": "setToolchain", "params": {"kind": "python", "constraint": "{2}"}, "recommended": true}
+        ]
+      },
+      {
+        "id": "python.no-matching-distribution",
+        "hint": "No matching distribution found",
+        "pattern": "No matching distribution found for (\\S+)",
+        "severity": "error",
+        "title": "%diag.noDistribution.title%",
+        "message": "%diag.noDistribution.message%"
+      },
+      {
+        "id": "python.uv-no-solution",
+        "hint": "No solution found when resolving",
+        "pattern": "No solution found when resolving dependencies",
+        "severity": "error",
+        "title": "%diag.noSolution.title%",
+        "message": "%diag.noSolution.message%"
+      },
+      {
+        "id": "python.uvicorn-address-in-use",
+        "hint": "address already in use",
+        "pattern": "error while attempting to bind on address \\('([^']*)', (\\d+)\\)",
+        "severity": "error",
+        "title": "%diag.uvicornPortInUse.title%",
+        "fixes": [
+          {"id": "kill", "title": "%fix.killUvicornPort%", "kind": "killPort", "params": {"port": "{2}"}, "recommended": true}
+        ]
+      },
+      {
+        "id": "python.externally-managed",
+        "hint": "externally-managed-environment",
+        "pattern": "externally-managed-environment",
+        "severity": "error",
+        "title": "%diag.externallyManaged.title%",
+        "message": "%diag.externallyManaged.message%",
+        "fixes": [
+          {"id": "createVenv", "title": "%fix.createVenv%", "kind": "custom", "recommended": true}
+        ]
+      },
+      {
+        "id": "python.msvc-required",
+        "hint": "Microsoft Visual C++",
+        "pattern": "Microsoft Visual C\\+\\+ 14\\.0 or greater is required",
+        "severity": "error",
+        "title": "%diag.msvc.title%",
+        "message": "%diag.msvc.message%",
+        "fixes": [
+          {"id": "buildTools", "title": "%fix.msvc%", "kind": "openUrl", "params": {"url": "https://visualstudio.microsoft.com/visual-cpp-build-tools/"}}
+        ]
+      },
+      {
+        "id": "python.python2-code",
+        "hint": "Missing parentheses in call to",
+        "pattern": "Missing parentheses in call to '(print|exec)'",
+        "severity": "error",
+        "title": "%diag.python2.title%",
+        "message": "%diag.python2.message%",
+        "stages": ["run"]
+      },
+      {
+        "id": "python.venv-interpreter-missing",
+        "hint": "No such file",
+        "pattern": "bad interpreter: No such file or directory|No Python at '",
+        "severity": "error",
+        "title": "%diag.venvGone.title%",
+        "fixes": [
+          {"id": "recreateVenv", "title": "%fix.recreateVenv%", "kind": "custom", "recommended": true, "confirm": "%confirm.recreateVenvAction%"}
+        ]
+      },
+      {
+        "id": "python.console-encoding",
+        "hint": "codec can't encode",
+        "pattern": "UnicodeEncodeError: '(gbk|cp936|cp1252|ascii)' codec can't encode",
+        "severity": "error",
+        "title": "%diag.encoding.title%",
+        "message": "%diag.encoding.message%",
+        "fixes": [
+          {"id": "utf8", "title": "%fix.utf8Mode%", "kind": "setEnv", "params": {"key": "PYTHONUTF8", "value": "1"}, "recommended": true}
+        ]
+      },
+      {
+        "id": "python.poetry-lock-outdated",
+        "hint": "poetry.lock",
+        "pattern": "pyproject\\.toml changed significantly since poetry\\.lock was last generated",
+        "severity": "error",
+        "title": "%diag.poetryLock.title%",
+        "stages": ["install"],
+        "fixes": [
+          {"id": "poetryLock", "title": "%fix.poetryLock%", "kind": "custom", "confirm": "%confirm.poetryLock%"}
+        ]
+      },
+      {
+        "id": "python.ssl-verify",
+        "hint": "CERTIFICATE_VERIFY_FAILED",
+        "pattern": "SSL: CERTIFICATE_VERIFY_FAILED",
+        "severity": "error",
+        "title": "%diag.ssl.title%",
+        "message": "%diag.ssl.message%"
+      }
+    ],
+    "actions": [
+      {"id": "installPackage", "title": "%action.installPackage%", "icon": "builtin:package", "facets": ["python"], "group": "dependencies", "locations": ["project.menu"],
+        "form": [{"key": "packages", "title": "%action.installPackage.field%", "type": "string", "required": true, "placeholder": "requests==2.32.3", "info": "%info.installPackage%"}]},
+      {"id": "recreateVenv", "title": "%action.recreateVenv%", "icon": "builtin:rotate-ccw", "facets": ["python"], "group": "dependencies", "locations": ["project.menu"], "confirm": "%confirm.recreateVenvAction%"}
+    ],
+    "views": [
+      {"id": "packages", "title": "%view.packages%", "icon": "builtin:package", "location": "project.tab", "facets": ["python"], "order": 50}
+    ],
+    "tools": [
+      {
+        "name": "packages",
+        "title": "%tool.packages%",
+        "description": "List the Python packages installed in a module's virtual environment, together with the interpreter path, Python version, package manager (uv/poetry/pdm/pipenv/conda/pip), the declared direct dependencies and whether they are all installed (dependencyState: ok | missing | outdated | none). Optional argument `filter` is a case-insensitive substring that narrows the package list. Read-only: it reads site-packages metadata and never runs pip.",
+        "scope": "module",
+        "readOnly": true,
+        "inputSchema": {"type": "object", "properties": {"filter": {"type": "string", "description": "Case-insensitive substring of package names to keep"}}}
+      }
+    ]
+  }
+}
