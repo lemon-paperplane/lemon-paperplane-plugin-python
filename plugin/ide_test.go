@@ -1,6 +1,7 @@
 package python
 
 import (
+	"runtime"
 	"testing"
 
 	sdk "github.com/lemon-paperplane/lemon-paperplane-main/lemon-paperplane-main-plugin-sdk"
@@ -8,9 +9,13 @@ import (
 
 // TestIdeaTemporaryConfig 对应 sudoku-api 里 PyCharm 的临时运行配置（带 ENV_FILES=.env）。
 func TestIdeaTemporaryConfig(t *testing.T) {
+	root := "/p"
+	if runtime.GOOS == "windows" {
+		root = `C:\p`
+	}
 	in := &sdk.AnalyzeParams{
-		Project: sdk.ProjectInfo{Root: "/p"},
-		Module:  sdk.ModuleInfo{Dir: "/p"},
+		Project: sdk.ProjectInfo{Root: root},
+		Module:  sdk.ModuleInfo{Dir: root},
 		IdeConfigs: []sdk.IdeRunConfig{{
 			Source: "idea", Type: "PythonConfigurationType", Name: "main",
 			Options: map[string]string{"SCRIPT_NAME": "$PROJECT_DIR$/main.py", "ENV_FILES": "$PROJECT_DIR$/.env", "WORKING_DIRECTORY": "$PROJECT_DIR$", "MODULE_MODE": "false", "PARAMETERS": ""},
